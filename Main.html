@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Nantes-evenements</title>
+  <style>
+
+    #demo{
+    }
+
+    .carte{
+    background-color: rgb(219, 255, 219);
+    width: 40%;
+    border: solid 1px black;
+    margin: 15px;
+    padding: 15px;
+    }
+  </style>
+  </head>
+
+  <body>
+      <h1>Nantes-evenements</h1>
+  	<div id="demo">
+        <pre>{{evts}}</pre>
+
+        <li v-for="records in evts">
+            <div class="carte">
+                <h2>{{ records.fields.nom}}</h2>
+                <hr>
+                <h5>{{ records.fields.description}}</h5>
+                <p>{{ records.fields.ville}} {{ records.fields.code_postal}}</p>
+            </div>
+        </li>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  	<script>
+  		var apiURL = 'https://data.nantesmetropole.fr/api/records/1.0/search/?dataset=244400404_agenda-animations-culturelles-bibliotheque-municipale-nantes&facet=precisions_public&facet=accueil_enfant&facet=date&facet=complet&facet=annule&facet=reporte&facet=lieu&facet=gratuit'
+		var config = {
+			headers: {'Authorization' : "bearer " + '0d74823c591fbd111c58812725e275997115308f4f863703b8c25867'}};
+
+		var demo = new Vue({
+
+		  el: '#demo',
+
+		  data: {
+              evts: []
+		  },
+
+		  created: function () {
+            this.fetchData()
+		  },
+
+		  watch: {
+            currentBranch: 'fetchData'
+		  },
+
+		  filters: {
+            truncate: function (v) {
+		      var newline = v.indexOf('\n')
+		      return newline > 0 ? v.slice(0, newline) : v
+		    },
+		    formatDate: function (v) {
+		      return v.replace(/T|Z/g, ' ')
+		    }
+		  },
+
+		  methods: {
+		    fetchData: function () {
+                var self = this;
+			   axios.get(apiURL, config)
+				.then(function(response){
+					console.log(response);
+					self.evts = response.data.records
+				})
+				.catch(function (error){
+					console.log(error);
+				})
+		    }
+		  }
+		})
+      </script>
+      
+  </body>
+</html>
