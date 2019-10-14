@@ -178,6 +178,7 @@
           return v.replace(/T|Z/g, ' ')
         },
          dateFr: function(d){
+           moment.locale('fr');
           return moment(d).format('l');
          }
       },
